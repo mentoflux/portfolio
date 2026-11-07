@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { BookOpen, ExternalLink, FileText, X } from 'lucide-react';
 import { Publication } from '../types/portfolio';
+import { resolveImageUrl } from '../utils/imageUtils';
 
 interface PublicationsProps {
   publications: Publication[];
@@ -37,7 +38,7 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
               <div className="sm:w-40 bg-gradient-to-br from-[#542C91]/5 to-[#A78BFA]/10 flex items-center justify-center p-4 sm:p-5 shrink-0 border-b sm:border-b-0 sm:border-r border-slate-100">
                 {pub.coverImage ? (
                   <img
-                    src={pub.coverImage}
+                    src={resolveImageUrl(pub.coverImage, './images/publication_book_cover_1794068198089.jpg')}
                     alt={pub.title}
                     className="w-24 h-32 sm:w-28 sm:h-38 object-cover rounded-lg shadow-sm hover:scale-105 transition-transform duration-300"
                     referrerPolicy="no-referrer"
@@ -104,7 +105,7 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
             <div className="flex items-center gap-3 mb-4">
               {selectedPub.coverImage ? (
                 <img
-                  src={selectedPub.coverImage}
+                  src={resolveImageUrl(selectedPub.coverImage, './images/publication_book_cover_1794068198089.jpg')}
                   alt={selectedPub.title}
                   className="w-14 h-20 object-cover rounded-lg shadow-sm"
                 />

@@ -1,11 +1,16 @@
 import { Project, Certification, Education, Experience, Skill, Publication, WebsiteSettings } from '../types/portfolio';
+import portraitImg from '../assets/images/hamza_saif_portrait_1794068197910.jpg';
+import ecsPortalImg from '../assets/images/project_ecs_portal_1794068198936.jpg';
+import financeAppImg from '../assets/images/project_finance_app_1794068199046.jpg';
+import pubBookCoverImg from '../assets/images/publication_book_cover_1794068198089.jpg';
+import certCredentialImg from '../assets/images/cert_sample_credential_1794074164596.jpg';
 
 export const INITIAL_SETTINGS: WebsiteSettings = {
   heroHeadline: "Building Ideas Into Digital Experiences.",
   heroSubheadline: "CA Student | AI Enthusiast | Vibe Coder | Web Developer",
   heroDescription: "I'm a CA student with a passion for AI, vibe coding, and building useful digital products. I love turning ideas into interactive websites, tools, and applications.",
   aboutText: "I'm Hamza Saif, a Chartered Accountancy student at CAF level, currently pursuing my professional journey through ICAP.\n\nBeyond accounting and finance, I'm deeply interested in artificial intelligence, vibe coding, web development, and building digital products.\n\nI enjoy experimenting with AI tools, transforming ideas into working applications, and creating practical solutions for students and professionals.\n\nMy interests lie at the intersection of finance, technology, creativity, and entrepreneurship.",
-  avatarUrl: "/src/assets/images/hamza_saif_portrait_1794068197910.jpg",
+  avatarUrl: portraitImg,
   email: "hsaif9240@gmail.com",
   linkedin: "https://linkedin.com/in/hamza-saif",
   availabilityText: "Building something interesting ✦",
@@ -24,7 +29,7 @@ export const INITIAL_PROJECTS: Project[] = [
     description: "A self-built web application specifically engineered for English Communication Skills (ECS) exam practice, vocabulary building, and timed interactive tests.",
     category: "Education",
     technologies: ["React", "TypeScript", "Tailwind CSS", "Interactive Exam Engine"],
-    coverImage: "/src/assets/images/project_ecs_portal_1794068198936.jpg",
+    coverImage: ecsPortalImg,
     liveUrl: "https://linkedin.com/in/hamza-saif",
     githubUrl: "https://github.com",
     isFeatured: true,
@@ -37,7 +42,7 @@ export const INITIAL_PROJECTS: Project[] = [
     description: "A personal finance tracking application combining accounting principles with modern data visualization to track budgets, cashflows, and saving targets.",
     category: "Finance & Accounting",
     technologies: ["TypeScript", "React", "Data Analytics", "Financial Ratios"],
-    coverImage: "/src/assets/images/project_finance_app_1794068199046.jpg",
+    coverImage: financeAppImg,
     liveUrl: "https://linkedin.com/in/hamza-saif",
     githubUrl: "https://github.com",
     isFeatured: true,
@@ -71,7 +76,7 @@ export const INITIAL_CERTIFICATIONS: Certification[] = [
     issuer: "Great Learning",
     issueDate: "2023",
     skills: ["HTML5", "Semantic Markup", "Web Standards"],
-    certificateImage: "/src/assets/images/cert_sample_credential_1794074164596.jpg",
+    certificateImage: certCredentialImg,
     isQualification: false,
     order: 3
   },
@@ -81,7 +86,7 @@ export const INITIAL_CERTIFICATIONS: Certification[] = [
     issuer: "Great Learning",
     issueDate: "2023",
     skills: ["CSS3", "Responsive Layouts", "Flexbox & Grid"],
-    certificateImage: "/src/assets/images/cert_sample_credential_1794074164596.jpg",
+    certificateImage: certCredentialImg,
     isQualification: false,
     order: 4
   },
@@ -195,7 +200,7 @@ export const INITIAL_PUBLICATIONS: Publication[] = [
     id: "pub-ecs",
     title: "English Communication Skills Practice Book",
     description: "An intensive practice resource specifically designed for ICAP ECS preparation, covering verbal reasoning, business dialogues, and exam techniques.",
-    coverImage: "/src/assets/images/publication_book_cover_1794068198089.jpg",
+    coverImage: pubBookCoverImg,
     order: 2
   }
 ];

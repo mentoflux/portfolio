@@ -12,6 +12,7 @@ import {
   ZoomIn
 } from 'lucide-react';
 import { Certification } from '../types/portfolio';
+import { resolveImageUrl } from '../utils/imageUtils';
 
 interface CertificationsProps {
   certifications: Certification[];
@@ -122,7 +123,7 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
                 {cert.certificateImage ? (
                   <div className="relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-slate-100 mb-3.5 border border-slate-200/80 group-hover:border-[#542C91]/30 transition-colors">
                     <img
-                      src={cert.certificateImage}
+                      src={resolveImageUrl(cert.certificateImage)}
                       alt={cert.title}
                       className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
@@ -238,7 +239,7 @@ export const Certifications: React.FC<CertificationsProps> = ({ certifications }
             {selectedCert.certificateImage ? (
               <div className="mb-4 rounded-2xl overflow-hidden border border-slate-200 shadow-sm bg-slate-50">
                 <img
-                  src={selectedCert.certificateImage}
+                  src={resolveImageUrl(selectedCert.certificateImage)}
                   alt={selectedCert.title}
                   className="w-full h-auto object-contain max-h-[350px]"
                   referrerPolicy="no-referrer"

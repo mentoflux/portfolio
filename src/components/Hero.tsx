@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowDown, Linkedin, Mail, Code2, Layers, Cpu } from 'lucide-react';
 import { WebsiteSettings } from '../types/portfolio';
+import { resolveImageUrl } from '../utils/imageUtils';
 
 interface HeroProps {
   settings: WebsiteSettings;
@@ -109,12 +110,15 @@ export const Hero: React.FC<HeroProps> = ({ settings }) => {
               <div className="relative bg-white rounded-3xl p-3 sm:p-4 shadow-lg border border-slate-200/80 overflow-hidden">
                 <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-slate-100 mb-3">
                   <img
-                    src={settings.avatarUrl || "/src/assets/images/hamza_saif_portrait_1794068197910.jpg"}
+                    src={resolveImageUrl(settings.avatarUrl, './images/hamza_saif_portrait_1794068197910.jpg')}
                     alt="Hamza Saif"
                     className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-500"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
+                      const img = e.currentTarget;
+                      if (!img.src.includes('images/hamza_saif_portrait')) {
+                        img.src = './images/hamza_saif_portrait_1794068197910.jpg';
+                      }
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />

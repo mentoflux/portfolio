@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ExternalLink, Github, Eye, X } from 'lucide-react';
 import { Project } from '../types/portfolio';
+import { resolveImageUrl } from '../utils/imageUtils';
 
 interface ProjectsProps {
   projects: Project[];
@@ -81,12 +82,15 @@ export const Projects: React.FC<ProjectsProps> = ({ projects }) => {
                   onClick={() => setActiveProject(project)}
                 >
                   <img
-                    src={project.coverImage || '/src/assets/images/project_ecs_portal_1794068198936.jpg'}
+                    src={resolveImageUrl(project.coverImage, './images/project_ecs_portal_1794068198936.jpg')}
                     alt={project.title}
                     className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500 ease-out"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
-                      (e.target as HTMLElement).style.display = 'none';
+                      const img = e.currentTarget;
+                      if (!img.src.includes('images/project_ecs_portal')) {
+                        img.src = './images/project_ecs_portal_1794068198936.jpg';
+                      }
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3 sm:p-4">
@@ -195,7 +199,7 @@ export const Projects: React.FC<ProjectsProps> = ({ projects }) => {
             {/* Modal Image */}
             <div className="relative aspect-video w-full bg-slate-100 overflow-hidden">
               <img
-                src={activeProject.coverImage}
+                src={resolveImageUrl(activeProject.coverImage, './images/project_ecs_portal_1794068198936.jpg')}
                 alt={activeProject.title}
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
