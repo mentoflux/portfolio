@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, ExternalLink, FileText, X } from 'lucide-react';
+import { BookOpen, ExternalLink, FileText } from 'lucide-react';
 import { Publication } from '../types/portfolio';
 import { resolveImageUrl } from '../utils/imageUtils';
 
@@ -8,7 +8,6 @@ interface PublicationsProps {
 }
 
 export const PublicationsSection: React.FC<PublicationsProps> = ({ publications }) => {
-  const [selectedPub, setSelectedPub] = useState<Publication | null>(null);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   return (
@@ -74,7 +73,7 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
                     {pub.title}
                   </h3>
 
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3 line-clamp-3">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
                     {pub.description}
                   </p>
                 </div>
@@ -84,13 +83,17 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
                     Self-Authored Material
                   </span>
 
-                  <button
-                    onClick={() => setSelectedPub(pub)}
-                    className="inline-flex items-center gap-1 font-semibold text-[#542C91] hover:text-[#432373] cursor-pointer"
-                  >
-                    <span>Read Details</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </button>
+                  {pub.externalUrl ? (
+                    <a
+                      href={pub.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 font-semibold text-[#542C91] hover:text-[#432373] text-xs transition-colors"
+                    >
+                      <span>Resource Link</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -98,76 +101,6 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
         </div>
 
       </div>
-
-      {/* Publication Modal */}
-      {selectedPub && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-2xs animate-fadeIn">
-          <div className="relative bg-white rounded-3xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-5 sm:p-7 shadow-2xl border border-slate-100">
-            <button
-              onClick={() => setSelectedPub(null)}
-              className="absolute top-3 right-3 sm:top-4 sm:right-4 w-8 h-8 rounded-full bg-slate-100 text-slate-700 hover:text-black flex items-center justify-center cursor-pointer"
-              aria-label="Close"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="flex items-center gap-3 mb-4">
-              {selectedPub.coverImage && !failedImages[selectedPub.id] ? (
-                <img
-                  src={resolveImageUrl(
-                    selectedPub.coverImage,
-                    selectedPub.id === 'pub-grammar'
-                      ? './images/publication_grammar_notes.jpg'
-                      : './images/publication_book_cover_1794068198089.jpg'
-                  )}
-                  alt={selectedPub.title}
-                  className="w-14 h-20 object-cover rounded-lg shadow-sm bg-white"
-                  onError={() => {
-                    setFailedImages((prev) => ({ ...prev, [selectedPub.id]: true }));
-                  }}
-                />
-              ) : (
-                <div className="w-12 h-16 rounded-lg bg-purple-100 text-[#542C91] flex items-center justify-center">
-                  <BookOpen className="w-6 h-6" />
-                </div>
-              )}
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#542C91]">
-                  Self-Authored Resource
-                </span>
-                <h3 className="text-base sm:text-lg font-bold text-[#191624]">
-                  {selectedPub.title}
-                </h3>
-              </div>
-            </div>
-
-            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4 whitespace-pre-line">
-              {selectedPub.description}
-            </p>
-
-            <div className="p-3.5 rounded-xl bg-[#FAF9FF] border border-slate-200/80 mb-4 text-xs text-slate-600">
-              <p className="font-semibold text-slate-800 mb-0.5">Target Audience & Purpose:</p>
-              <p>Designed for ICAP students and secondary education candidates seeking concise, systematic explanations and focused practice material.</p>
-            </div>
-
-            {selectedPub.externalUrl ? (
-              <a
-                href={selectedPub.externalUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl bg-[#542C91] text-white text-xs sm:text-sm font-semibold hover:bg-[#432373] transition-colors"
-              >
-                <span>Access Resource Notes</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
-            ) : (
-              <div className="text-center text-xs text-slate-500">
-                Shared upon request with student study communities and peer groups.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </section>
   );
 };
