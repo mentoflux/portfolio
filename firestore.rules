@@ -1,0 +1,54 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128;
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Projects: portfolio items
+    match /projects/{projectId} {
+      allow read, write: if true;
+    }
+
+    // Certifications
+    match /certifications/{certId} {
+      allow read, write: if true;
+    }
+
+    // Education
+    match /education/{eduId} {
+      allow read, write: if true;
+    }
+
+    // Experience
+    match /experience/{expId} {
+      allow read, write: if true;
+    }
+
+    // Skills
+    match /skills/{skillId} {
+      allow read, write: if true;
+    }
+
+    // Publications
+    match /publications/{pubId} {
+      allow read, write: if true;
+    }
+
+    // Website Settings
+    match /settings/{settingId} {
+      allow read, write: if true;
+    }
+
+    // Contact Form Messages
+    match /messages/{messageId} {
+      allow read, write: if true;
+    }
+  }
+}

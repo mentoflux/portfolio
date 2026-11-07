@@ -1,0 +1,154 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "Portfolio project item",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 2000 },
+        "coverImage": { "type": "string", "maxLength": 1000000 },
+        "liveUrl": { "type": "string", "maxLength": 500 },
+        "githubUrl": { "type": "string", "maxLength": 500 },
+        "category": { "type": "string", "maxLength": 100 },
+        "technologies": { "type": "array" },
+        "isFeatured": { "type": "boolean" },
+        "isPublished": { "type": "boolean" },
+        "order": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["title", "description", "category", "isPublished", "order"]
+    },
+    "Certification": {
+      "title": "Certification",
+      "description": "Certification and learning credential",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 150 },
+        "issuer": { "type": "string", "maxLength": 150 },
+        "issueDate": { "type": "string", "maxLength": 100 },
+        "skills": { "type": "array" },
+        "credentialId": { "type": "string", "maxLength": 150 },
+        "certificateImage": { "type": "string", "maxLength": 1000000 },
+        "credentialUrl": { "type": "string", "maxLength": 500 },
+        "isQualification": { "type": "boolean" },
+        "order": { "type": "number" }
+      },
+      "required": ["title", "issuer", "issueDate", "order"]
+    },
+    "Education": {
+      "title": "Education",
+      "description": "Education timeline milestone",
+      "type": "object",
+      "properties": {
+        "degree": { "type": "string", "maxLength": 150 },
+        "institution": { "type": "string", "maxLength": 150 },
+        "period": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "order": { "type": "number" }
+      },
+      "required": ["degree", "institution", "period", "order"]
+    },
+    "Experience": {
+      "title": "Experience",
+      "description": "Professional experience or community leadership entry",
+      "type": "object",
+      "properties": {
+        "role": { "type": "string", "maxLength": 150 },
+        "organization": { "type": "string", "maxLength": 150 },
+        "period": { "type": "string", "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 1500 },
+        "order": { "type": "number" }
+      },
+      "required": ["role", "organization", "description", "order"]
+    },
+    "Skill": {
+      "title": "Skill",
+      "description": "Skill badge or competency",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "maxLength": 100 },
+        "order": { "type": "number" }
+      },
+      "required": ["name", "category", "order"]
+    },
+    "Publication": {
+      "title": "Publication",
+      "description": "Publication or educational resource guide",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "maxLength": 150 },
+        "description": { "type": "string", "maxLength": 1500 },
+        "coverImage": { "type": "string", "maxLength": 1000000 },
+        "externalUrl": { "type": "string", "maxLength": 500 },
+        "order": { "type": "number" }
+      },
+      "required": ["title", "description", "order"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Global website settings and content configuration",
+      "type": "object",
+      "properties": {
+        "heroHeadline": { "type": "string", "maxLength": 300 },
+        "heroSubheadline": { "type": "string", "maxLength": 300 },
+        "heroDescription": { "type": "string", "maxLength": 1500 },
+        "aboutText": { "type": "string", "maxLength": 3000 },
+        "avatarUrl": { "type": "string", "maxLength": 1000000 },
+        "email": { "type": "string", "maxLength": 200 },
+        "linkedin": { "type": "string", "maxLength": 300 },
+        "availabilityText": { "type": "string", "maxLength": 150 },
+        "accentColor": { "type": "string", "maxLength": 50 }
+      }
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Contact form inquiry message",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 150 },
+        "email": { "type": "string", "maxLength": 200 },
+        "subject": { "type": "string", "maxLength": 250 },
+        "message": { "type": "string", "maxLength": 4000 },
+        "createdAt": { "type": "string" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["name", "email", "subject", "message"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Public and draft portfolio projects"
+    },
+    "/certifications/{certId}": {
+      "schema": "Certification",
+      "description": "Certifications and professional qualifications"
+    },
+    "/education/{eduId}": {
+      "schema": "Education",
+      "description": "Educational milestones and degrees"
+    },
+    "/experience/{expId}": {
+      "schema": "Experience",
+      "description": "Professional experiences and leadership"
+    },
+    "/skills/{skillId}": {
+      "schema": "Skill",
+      "description": "Technical and business skills"
+    },
+    "/publications/{pubId}": {
+      "schema": "Publication",
+      "description": "Authored guides and educational publications"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "General site copy and hero/about settings"
+    },
+    "/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Contact inquiries sent by visitors"
+    }
+  }
+}
