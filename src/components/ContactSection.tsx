@@ -90,7 +90,7 @@ export const ContactSection: React.FC<ContactProps> = ({ settings }) => {
               </a>
 
               <a
-                href={settings.linkedin || 'https://linkedin.com/in/hamza-saif'}
+                href={settings.linkedin || 'https://www.linkedin.com/in/ihamzasaif/'}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl bg-[#FAF9FF] border border-slate-200/80 hover:border-[#542C91]/40 transition-colors group"
@@ -101,7 +101,9 @@ export const ContactSection: React.FC<ContactProps> = ({ settings }) => {
                 <div className="min-w-0">
                   <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">LinkedIn</p>
                   <p className="text-xs sm:text-sm font-bold text-[#191624] group-hover:text-[#542C91] transition-colors truncate">
-                    linkedin.com/in/hamza-saif
+                    {settings.linkedin
+                      ? settings.linkedin.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
+                      : 'linkedin.com/in/ihamzasaif'}
                   </p>
                 </div>
               </a>

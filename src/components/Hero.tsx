@@ -65,7 +65,7 @@ export const Hero: React.FC<HeroProps> = ({ settings }) => {
 
               <div className="flex items-center gap-2 ml-1 sm:ml-2 border-l border-slate-200 pl-3">
                 <a
-                  href={settings.linkedin || "https://linkedin.com/in/hamza-saif"}
+                  href={settings.linkedin || "https://www.linkedin.com/in/ihamzasaif/"}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white border border-slate-200 text-slate-700 hover:text-[#542C91] hover:border-[#542C91]/40 flex items-center justify-center transition-colors shadow-2xs"

@@ -36,7 +36,7 @@ export const Footer: React.FC<FooterProps> = ({ settings, onOpenAdmin }) => {
           {/* Nav / Socials */}
           <div className="flex items-center gap-4">
             <a
-              href={settings.linkedin || "https://linkedin.com/in/hamza-saif"}
+              href={settings.linkedin || "https://www.linkedin.com/in/ihamzasaif/"}
               target="_blank"
               rel="noopener noreferrer"
               className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 text-purple-200 hover:text-white hover:bg-white/10 flex items-center justify-center transition-colors"
