@@ -38,10 +38,24 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
               <div className="sm:w-40 bg-gradient-to-br from-[#542C91]/5 to-[#A78BFA]/10 flex items-center justify-center p-4 sm:p-5 shrink-0 border-b sm:border-b-0 sm:border-r border-slate-100">
                 {pub.coverImage ? (
                   <img
-                    src={resolveImageUrl(pub.coverImage, './images/publication_book_cover_1794068198089.jpg')}
+                    src={resolveImageUrl(
+                      pub.coverImage,
+                      pub.id === 'pub-grammar'
+                        ? './images/publication_grammar_notes.jpg'
+                        : './images/publication_book_cover_1794068198089.jpg'
+                    )}
                     alt={pub.title}
-                    className="w-24 h-32 sm:w-28 sm:h-38 object-cover rounded-lg shadow-sm hover:scale-105 transition-transform duration-300"
+                    className="w-24 h-32 sm:w-28 sm:h-38 object-cover rounded-lg shadow-sm hover:scale-105 transition-transform duration-300 bg-white"
                     referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      const fallback = pub.id === 'pub-grammar'
+                        ? './images/publication_grammar_notes.jpg'
+                        : './images/publication_book_cover_1794068198089.jpg';
+                      if (!img.src.includes('publication_')) {
+                        img.src = fallback;
+                      }
+                    }}
                   />
                 ) : (
                   <div className="w-24 h-32 sm:w-28 sm:h-38 rounded-lg bg-white border border-[#542C91]/20 flex flex-col items-center justify-center text-center p-3 shadow-2xs">
@@ -105,9 +119,23 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
             <div className="flex items-center gap-3 mb-4">
               {selectedPub.coverImage ? (
                 <img
-                  src={resolveImageUrl(selectedPub.coverImage, './images/publication_book_cover_1794068198089.jpg')}
+                  src={resolveImageUrl(
+                    selectedPub.coverImage,
+                    selectedPub.id === 'pub-grammar'
+                      ? './images/publication_grammar_notes.jpg'
+                      : './images/publication_book_cover_1794068198089.jpg'
+                  )}
                   alt={selectedPub.title}
-                  className="w-14 h-20 object-cover rounded-lg shadow-sm"
+                  className="w-14 h-20 object-cover rounded-lg shadow-sm bg-white"
+                  onError={(e) => {
+                    const img = e.currentTarget;
+                    const fallback = selectedPub.id === 'pub-grammar'
+                      ? './images/publication_grammar_notes.jpg'
+                      : './images/publication_book_cover_1794068198089.jpg';
+                    if (!img.src.includes('publication_')) {
+                      img.src = fallback;
+                    }
+                  }}
                 />
               ) : (
                 <div className="w-12 h-16 rounded-lg bg-purple-100 text-[#542C91] flex items-center justify-center">

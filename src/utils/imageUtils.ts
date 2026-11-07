@@ -10,6 +10,11 @@ export function resolveImageUrl(url?: string | null, fallback: string = ''): str
 
   const trimmed = url.trim();
 
+  // 0. Handle unrenderable browser formats like TIFF by returning fallback
+  if (trimmed.startsWith('data:image/tiff') || trimmed.startsWith('data:image/x-tiff')) {
+    return fallback || './images/publication_grammar_notes.jpg';
+  }
+
   // 1. Data URLs (base64 compressed uploads) or full HTTP(S) links
   if (
     trimmed.startsWith('data:') ||

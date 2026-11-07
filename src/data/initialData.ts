@@ -3,6 +3,7 @@ import portraitImg from '../assets/images/hamza_saif_portrait_1794068197910.jpg'
 import ecsPortalImg from '../assets/images/project_ecs_portal_1794068198936.jpg';
 import financeAppImg from '../assets/images/project_finance_app_1794068199046.jpg';
 import pubBookCoverImg from '../assets/images/publication_book_cover_1794068198089.jpg';
+import pubGrammarImg from '../assets/images/publication_grammar_notes.jpg';
 import certCredentialImg from '../assets/images/cert_sample_credential_1794074164596.jpg';
 
 export const INITIAL_SETTINGS: WebsiteSettings = {
@@ -194,6 +195,7 @@ export const INITIAL_PUBLICATIONS: Publication[] = [
     id: "pub-grammar",
     title: "English Grammar Notes",
     description: "A comprehensive self-authored guide for Matric-level students breaking down English grammar concepts, sentence structures, and common exam questions.",
+    coverImage: pubGrammarImg,
     order: 1
   },
   {

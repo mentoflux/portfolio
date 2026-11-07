@@ -148,7 +148,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   // Canvas compressor to prevent Firestore 1MB document limit overflow
-  const compressImage = (file: File, maxWidth = 1000, maxHeight = 1000, quality = 0.78): Promise<string> => {
+  const compressImage = (file: File, maxWidth = 800, maxHeight = 800, quality = 0.75): Promise<string> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -175,14 +175,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             resolve(event.target?.result as string);
             return;
           }
+          // White background for transparent PNG/WebP
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, width, height);
           ctx.drawImage(img, 0, 0, width, height);
           const compressed = canvas.toDataURL('image/jpeg', quality);
           resolve(compressed);
         };
-        img.onerror = (e) => reject(e);
+        img.onerror = () => reject(new Error('Browser could not decode image format. Please use JPG, PNG, or WebP.'));
         img.src = event.target?.result as string;
       };
-      reader.onerror = (e) => reject(e);
+      reader.onerror = () => reject(new Error('Failed to read file from disk.'));
       reader.readAsDataURL(file);
     });
   };
@@ -197,19 +200,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
     try {
       showToast('Optimizing picture for fast saving...', 'success');
-      const compressedData = await compressImage(file, 1000, 1000, 0.78);
+      const compressedData = await compressImage(file, 800, 800, 0.75);
       onComplete(compressedData);
       showToast('Picture uploaded and ready to save!', 'success');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Image compression error:', err);
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          onComplete(event.target.result as string);
-          showToast('Image uploaded', 'success');
-        }
-      };
-      reader.readAsDataURL(file);
+      showToast(err?.message || 'Please upload a standard image file (JPG, PNG, or WebP)', 'error');
+    } finally {
+      e.target.value = '';
     }
   };
 
