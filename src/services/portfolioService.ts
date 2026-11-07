@@ -8,7 +8,9 @@ import {
   deleteDoc,
   query,
   orderBy,
-  addDoc
+  addDoc,
+  onSnapshot,
+  writeBatch
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from './firebase';
 import {
@@ -324,4 +326,195 @@ export async function deleteMessage(id: string): Promise<void> {
   } catch (error) {
     handleFirestoreError(error, OperationType.DELETE, `${COLLECTIONS.MESSAGES}/${id}`);
   }
+}
+
+// Reorder items in batch
+export async function reorderCollectionItems(
+  collectionName: string,
+  items: { id: string; order: number }[]
+): Promise<void> {
+  try {
+    const batch = writeBatch(db);
+    for (const item of items) {
+      const ref = doc(db, collectionName, item.id);
+      batch.update(ref, { order: item.order });
+    }
+    await batch.commit();
+  } catch (error) {
+    // If update fails on uncreated fields, fallback to setDoc with merge
+    try {
+      for (const item of items) {
+        await setDoc(doc(db, collectionName, item.id), { order: item.order }, { merge: true });
+      }
+    } catch (fallbackError) {
+      handleFirestoreError(fallbackError, OperationType.UPDATE, collectionName);
+    }
+  }
+}
+
+/**
+ * Real-time listener for live portfolio updates across all connected mobile devices & browsers.
+ */
+export function subscribeToPortfolioData(callbacks: {
+  onSettings?: (s: WebsiteSettings) => void;
+  onProjects?: (p: Project[]) => void;
+  onCertifications?: (c: Certification[]) => void;
+  onEducation?: (e: Education[]) => void;
+  onExperience?: (exp: Experience[]) => void;
+  onSkills?: (s: Skill[]) => void;
+  onPublications?: (pubs: Publication[]) => void;
+}): () => void {
+  const unsubs: (() => void)[] = [];
+
+  // 1. Live Settings & Avatar Listener
+  if (callbacks.onSettings) {
+    try {
+      const unsub = onSnapshot(
+        doc(db, COLLECTIONS.SETTINGS, 'general'),
+        (snap) => {
+          if (snap.exists()) {
+            callbacks.onSettings!(snap.data() as WebsiteSettings);
+          }
+        },
+        (error) => {
+          console.warn('Settings live listener warning:', error);
+        }
+      );
+      unsubs.push(unsub);
+    } catch (e) {
+      console.warn('Could not attach settings live listener:', e);
+    }
+  }
+
+  // 2. Live Projects Listener
+  if (callbacks.onProjects) {
+    try {
+      const q = query(collection(db, COLLECTIONS.PROJECTS), orderBy('order', 'asc'));
+      const unsub = onSnapshot(
+        q,
+        (snap) => {
+          if (!snap.empty) {
+            callbacks.onProjects!(snap.docs.map(d => ({ id: d.id, ...d.data() } as Project)));
+          }
+        },
+        (error) => {
+          console.warn('Projects live listener warning:', error);
+        }
+      );
+      unsubs.push(unsub);
+    } catch (e) {
+      console.warn('Could not attach projects live listener:', e);
+    }
+  }
+
+  // 3. Live Certifications Listener
+  if (callbacks.onCertifications) {
+    try {
+      const q = query(collection(db, COLLECTIONS.CERTIFICATIONS), orderBy('order', 'asc'));
+      const unsub = onSnapshot(
+        q,
+        (snap) => {
+          if (!snap.empty) {
+            callbacks.onCertifications!(snap.docs.map(d => ({ id: d.id, ...d.data() } as Certification)));
+          }
+        },
+        (error) => {
+          console.warn('Certifications live listener warning:', error);
+        }
+      );
+      unsubs.push(unsub);
+    } catch (e) {
+      console.warn('Could not attach certifications live listener:', e);
+    }
+  }
+
+  // 4. Live Education Listener
+  if (callbacks.onEducation) {
+    try {
+      const q = query(collection(db, COLLECTIONS.EDUCATION), orderBy('order', 'asc'));
+      const unsub = onSnapshot(
+        q,
+        (snap) => {
+          if (!snap.empty) {
+            callbacks.onEducation!(snap.docs.map(d => ({ id: d.id, ...d.data() } as Education)));
+          }
+        },
+        (error) => {
+          console.warn('Education live listener warning:', error);
+        }
+      );
+      unsubs.push(unsub);
+    } catch (e) {
+      console.warn('Could not attach education live listener:', e);
+    }
+  }
+
+  // 5. Live Experience Listener
+  if (callbacks.onExperience) {
+    try {
+      const q = query(collection(db, COLLECTIONS.EXPERIENCE), orderBy('order', 'asc'));
+      const unsub = onSnapshot(
+        q,
+        (snap) => {
+          if (!snap.empty) {
+            callbacks.onExperience!(snap.docs.map(d => ({ id: d.id, ...d.data() } as Experience)));
+          }
+        },
+        (error) => {
+          console.warn('Experience live listener warning:', error);
+        }
+      );
+      unsubs.push(unsub);
+    } catch (e) {
+      console.warn('Could not attach experience live listener:', e);
+    }
+  }
+
+  // 6. Live Skills Listener
+  if (callbacks.onSkills) {
+    try {
+      const q = query(collection(db, COLLECTIONS.SKILLS), orderBy('order', 'asc'));
+      const unsub = onSnapshot(
+        q,
+        (snap) => {
+          if (!snap.empty) {
+            callbacks.onSkills!(snap.docs.map(d => ({ id: d.id, ...d.data() } as Skill)));
+          }
+        },
+        (error) => {
+          console.warn('Skills live listener warning:', error);
+        }
+      );
+      unsubs.push(unsub);
+    } catch (e) {
+      console.warn('Could not attach skills live listener:', e);
+    }
+  }
+
+  // 7. Live Publications Listener
+  if (callbacks.onPublications) {
+    try {
+      const q = query(collection(db, COLLECTIONS.PUBLICATIONS), orderBy('order', 'asc'));
+      const unsub = onSnapshot(
+        q,
+        (snap) => {
+          if (!snap.empty) {
+            callbacks.onPublications!(snap.docs.map(d => ({ id: d.id, ...d.data() } as Publication)));
+          }
+        },
+        (error) => {
+          console.warn('Publications live listener warning:', error);
+        }
+      );
+      unsubs.push(unsub);
+    } catch (e) {
+      console.warn('Could not attach publications live listener:', e);
+    }
+  }
+
+  return () => {
+    unsubs.forEach(u => {
+      try { u(); } catch {}
+    });
+  };
 }

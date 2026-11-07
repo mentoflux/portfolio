@@ -29,7 +29,8 @@ import {
   fetchExperience,
   fetchSkills,
   fetchPublications,
-  fetchSettings
+  fetchSettings,
+  subscribeToPortfolioData
 } from './services/portfolioService';
 import {
   INITIAL_PROJECTS,
@@ -45,15 +46,68 @@ import { Loader2 } from 'lucide-react';
 function PortfolioMain() {
   const { user, isAdmin, loading: authLoading } = useAuth();
   
-  const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
-  const [certifications, setCertifications] = useState<Certification[]>(INITIAL_CERTIFICATIONS);
-  const [education, setEducation] = useState<Education[]>(INITIAL_EDUCATION);
-  const [experience, setExperience] = useState<Experience[]>(INITIAL_EXPERIENCE);
-  const [skills, setSkills] = useState<Skill[]>(INITIAL_SKILLS);
-  const [publications, setPublications] = useState<Publication[]>(INITIAL_PUBLICATIONS);
-  const [settings, setSettings] = useState<WebsiteSettings>(INITIAL_SETTINGS);
+  // Instant hydration from local storage cache to eliminate any image/data flicker on refresh
+  const [projects, setProjects] = useState<Project[]>(() => {
+    try {
+      const cached = localStorage.getItem('portfolio_cache_projects');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return INITIAL_PROJECTS;
+  });
 
-  const [loadingData, setLoadingData] = useState(true);
+  const [certifications, setCertifications] = useState<Certification[]>(() => {
+    try {
+      const cached = localStorage.getItem('portfolio_cache_certifications');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return INITIAL_CERTIFICATIONS;
+  });
+
+  const [education, setEducation] = useState<Education[]>(() => {
+    try {
+      const cached = localStorage.getItem('portfolio_cache_education');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return INITIAL_EDUCATION;
+  });
+
+  const [experience, setExperience] = useState<Experience[]>(() => {
+    try {
+      const cached = localStorage.getItem('portfolio_cache_experience');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return INITIAL_EXPERIENCE;
+  });
+
+  const [skills, setSkills] = useState<Skill[]>(() => {
+    try {
+      const cached = localStorage.getItem('portfolio_cache_skills');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return INITIAL_SKILLS;
+  });
+
+  const [publications, setPublications] = useState<Publication[]>(() => {
+    try {
+      const cached = localStorage.getItem('portfolio_cache_publications');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return INITIAL_PUBLICATIONS;
+  });
+
+  const [settings, setSettings] = useState<WebsiteSettings>(() => {
+    try {
+      const cached = localStorage.getItem('portfolio_cache_settings');
+      if (cached) return JSON.parse(cached);
+    } catch {}
+    return INITIAL_SETTINGS;
+  });
+
+  // Track initial live database synchronization before rendering to prevent any placeholder flash
+  const [initialSyncDone, setInitialSyncDone] = useState<boolean>(() => {
+    // If we already have cached settings in this browser, we can display immediately
+    return !!localStorage.getItem('portfolio_cache_settings');
+  });
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);
 
@@ -70,22 +124,92 @@ function PortfolioMain() {
         fetchSettings()
       ]);
 
-      if (projs && projs.length > 0) setProjects(projs);
-      if (certs && certs.length > 0) setCertifications(certs);
-      if (edu && edu.length > 0) setEducation(edu);
-      if (exp && exp.length > 0) setExperience(exp);
-      if (sks && sks.length > 0) setSkills(sks);
-      if (pubs && pubs.length > 0) setPublications(pubs);
-      if (sets) setSettings(sets);
+      if (projs && projs.length > 0) {
+        setProjects(projs);
+        try { localStorage.setItem('portfolio_cache_projects', JSON.stringify(projs)); } catch {}
+      }
+      if (certs && certs.length > 0) {
+        setCertifications(certs);
+        try { localStorage.setItem('portfolio_cache_certifications', JSON.stringify(certs)); } catch {}
+      }
+      if (edu && edu.length > 0) {
+        setEducation(edu);
+        try { localStorage.setItem('portfolio_cache_education', JSON.stringify(edu)); } catch {}
+      }
+      if (exp && exp.length > 0) {
+        setExperience(exp);
+        try { localStorage.setItem('portfolio_cache_experience', JSON.stringify(exp)); } catch {}
+      }
+      if (sks && sks.length > 0) {
+        setSkills(sks);
+        try { localStorage.setItem('portfolio_cache_skills', JSON.stringify(sks)); } catch {}
+      }
+      if (pubs && pubs.length > 0) {
+        setPublications(pubs);
+        try { localStorage.setItem('portfolio_cache_publications', JSON.stringify(pubs)); } catch {}
+      }
+      if (sets) {
+        setSettings(sets);
+        try { localStorage.setItem('portfolio_cache_settings', JSON.stringify(sets)); } catch {}
+      }
     } catch (err) {
-      console.warn('Using default initial portfolio datasets:', err);
+      console.warn('Using local portfolio cache/datasets:', err);
     } finally {
-      setLoadingData(false);
+      setInitialSyncDone(true);
     }
   };
 
   useEffect(() => {
-    loadAllData();
+    let isMounted = true;
+
+    // 1. Initial live database load
+    loadAllData().then(() => {
+      if (isMounted) setInitialSyncDone(true);
+    });
+
+    // 2. Real-time Firestore sync across all devices & mobiles worldwide
+    const unsubscribe = subscribeToPortfolioData({
+      onSettings: (liveSettings) => {
+        if (!isMounted) return;
+        setSettings(liveSettings);
+        try { localStorage.setItem('portfolio_cache_settings', JSON.stringify(liveSettings)); } catch {}
+      },
+      onProjects: (liveProjects) => {
+        if (!isMounted) return;
+        setProjects(liveProjects);
+        try { localStorage.setItem('portfolio_cache_projects', JSON.stringify(liveProjects)); } catch {}
+      },
+      onCertifications: (liveCerts) => {
+        if (!isMounted) return;
+        setCertifications(liveCerts);
+        try { localStorage.setItem('portfolio_cache_certifications', JSON.stringify(liveCerts)); } catch {}
+      },
+      onEducation: (liveEdu) => {
+        if (!isMounted) return;
+        setEducation(liveEdu);
+        try { localStorage.setItem('portfolio_cache_education', JSON.stringify(liveEdu)); } catch {}
+      },
+      onExperience: (liveExp) => {
+        if (!isMounted) return;
+        setExperience(liveExp);
+        try { localStorage.setItem('portfolio_cache_experience', JSON.stringify(liveExp)); } catch {}
+      },
+      onSkills: (liveSkills) => {
+        if (!isMounted) return;
+        setSkills(liveSkills);
+        try { localStorage.setItem('portfolio_cache_skills', JSON.stringify(liveSkills)); } catch {}
+      },
+      onPublications: (livePubs) => {
+        if (!isMounted) return;
+        setPublications(livePubs);
+        try { localStorage.setItem('portfolio_cache_publications', JSON.stringify(livePubs)); } catch {}
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, []);
 
   const handleOpenAdmin = () => {
@@ -104,14 +228,15 @@ function PortfolioMain() {
     }
   }, [isAdmin, loginModalOpen]);
 
-  if (loadingData && authLoading) {
+  // Clean, branded splash on new mobile devices while connecting to live database
+  if (!initialSyncDone) {
     return (
-      <div className="min-h-screen bg-[#FAF9FF] flex flex-col items-center justify-center p-6 text-center">
-        <div className="w-12 h-12 rounded-2xl bg-[#542C91] text-white flex items-center justify-center font-bold text-lg mb-4 shadow-md animate-pulse">
+      <div className="min-h-screen bg-[#FAF9FF] flex flex-col items-center justify-center p-6 text-center select-none">
+        <div className="w-14 h-14 rounded-2xl bg-[#542C91] text-white flex items-center justify-center font-bold text-xl mb-3.5 shadow-lg shadow-[#542C91]/25 animate-pulse">
           HS
         </div>
-        <p className="text-sm font-semibold text-slate-700 mb-2">Loading Hamza Saif's Portfolio...</p>
-        <Loader2 className="w-5 h-5 text-[#542C91] animate-spin" />
+        <p className="text-xs font-semibold text-[#542C91] tracking-wider uppercase mb-2">Hamza Saif · Portfolio</p>
+        <Loader2 className="w-4 h-4 text-[#542C91] animate-spin mx-auto" />
       </div>
     );
   }

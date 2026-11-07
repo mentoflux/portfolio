@@ -9,6 +9,7 @@ interface PublicationsProps {
 
 export const PublicationsSection: React.FC<PublicationsProps> = ({ publications }) => {
   const [selectedPub, setSelectedPub] = useState<Publication | null>(null);
+  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
   return (
     <section id="publications" className="py-14 sm:py-20 bg-[#FAF9FF] relative border-t border-slate-100">
@@ -36,7 +37,7 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
             >
               {/* Publication Cover Image / Icon */}
               <div className="sm:w-40 bg-gradient-to-br from-[#542C91]/5 to-[#A78BFA]/10 flex items-center justify-center p-4 sm:p-5 shrink-0 border-b sm:border-b-0 sm:border-r border-slate-100">
-                {pub.coverImage ? (
+                {pub.coverImage && !failedImages[pub.id] ? (
                   <img
                     src={resolveImageUrl(
                       pub.coverImage,
@@ -47,14 +48,8 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
                     alt={pub.title}
                     className="w-24 h-32 sm:w-28 sm:h-38 object-cover rounded-lg shadow-sm hover:scale-105 transition-transform duration-300 bg-white"
                     referrerPolicy="no-referrer"
-                    onError={(e) => {
-                      const img = e.currentTarget;
-                      const fallback = pub.id === 'pub-grammar'
-                        ? './images/publication_grammar_notes.jpg'
-                        : './images/publication_book_cover_1794068198089.jpg';
-                      if (!img.src.includes('publication_')) {
-                        img.src = fallback;
-                      }
+                    onError={() => {
+                      setFailedImages((prev) => ({ ...prev, [pub.id]: true }));
                     }}
                   />
                 ) : (
@@ -117,7 +112,7 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              {selectedPub.coverImage ? (
+              {selectedPub.coverImage && !failedImages[selectedPub.id] ? (
                 <img
                   src={resolveImageUrl(
                     selectedPub.coverImage,
@@ -127,14 +122,8 @@ export const PublicationsSection: React.FC<PublicationsProps> = ({ publications 
                   )}
                   alt={selectedPub.title}
                   className="w-14 h-20 object-cover rounded-lg shadow-sm bg-white"
-                  onError={(e) => {
-                    const img = e.currentTarget;
-                    const fallback = selectedPub.id === 'pub-grammar'
-                      ? './images/publication_grammar_notes.jpg'
-                      : './images/publication_book_cover_1794068198089.jpg';
-                    if (!img.src.includes('publication_')) {
-                      img.src = fallback;
-                    }
+                  onError={() => {
+                    setFailedImages((prev) => ({ ...prev, [selectedPub.id]: true }));
                   }}
                 />
               ) : (

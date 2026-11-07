@@ -23,7 +23,10 @@ import {
   X,
   Menu,
   Image as ImageIcon,
-  Loader2
+  Loader2,
+  ChevronUp,
+  ChevronDown,
+  ArrowUpDown
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { resolveImageUrl } from '../../utils/imageUtils';
@@ -53,7 +56,9 @@ import {
   saveSettings,
   fetchMessages,
   markMessageRead,
-  deleteMessage
+  deleteMessage,
+  reorderCollectionItems,
+  COLLECTIONS
 } from '../../services/portfolioService';
 
 interface AdminDashboardProps {
@@ -211,6 +216,139 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     }
   };
 
+  // --- Reordering Handlers (Move Up / Move Down) ---
+  const handleMoveProject = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= projects.length) return;
+
+    try {
+      setLoadingAction(true);
+      const items = [...projects];
+      const temp = items[index];
+      items[index] = items[targetIndex];
+      items[targetIndex] = temp;
+
+      const reordered = items.map((item, idx) => ({ id: item.id, order: idx + 1 }));
+      await reorderCollectionItems(COLLECTIONS.PROJECTS, reordered);
+      await onRefreshData();
+      showToast('Project display order updated');
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update order', 'error');
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  const handleMoveCert = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= certifications.length) return;
+
+    try {
+      setLoadingAction(true);
+      const items = [...certifications];
+      const temp = items[index];
+      items[index] = items[targetIndex];
+      items[targetIndex] = temp;
+
+      const reordered = items.map((item, idx) => ({ id: item.id, order: idx + 1 }));
+      await reorderCollectionItems(COLLECTIONS.CERTIFICATIONS, reordered);
+      await onRefreshData();
+      showToast('Certification display order updated');
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update order', 'error');
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  const handleMoveEdu = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= education.length) return;
+
+    try {
+      setLoadingAction(true);
+      const items = [...education];
+      const temp = items[index];
+      items[index] = items[targetIndex];
+      items[targetIndex] = temp;
+
+      const reordered = items.map((item, idx) => ({ id: item.id, order: idx + 1 }));
+      await reorderCollectionItems(COLLECTIONS.EDUCATION, reordered);
+      await onRefreshData();
+      showToast('Education timeline order updated');
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update order', 'error');
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  const handleMoveExp = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= experience.length) return;
+
+    try {
+      setLoadingAction(true);
+      const items = [...experience];
+      const temp = items[index];
+      items[index] = items[targetIndex];
+      items[targetIndex] = temp;
+
+      const reordered = items.map((item, idx) => ({ id: item.id, order: idx + 1 }));
+      await reorderCollectionItems(COLLECTIONS.EXPERIENCE, reordered);
+      await onRefreshData();
+      showToast('Experience order updated');
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update order', 'error');
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  const handleMoveSkill = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= skills.length) return;
+
+    try {
+      setLoadingAction(true);
+      const items = [...skills];
+      const temp = items[index];
+      items[index] = items[targetIndex];
+      items[targetIndex] = temp;
+
+      const reordered = items.map((item, idx) => ({ id: item.id, order: idx + 1 }));
+      await reorderCollectionItems(COLLECTIONS.SKILLS, reordered);
+      await onRefreshData();
+      showToast('Skill order updated');
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update order', 'error');
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
+  const handleMovePub = async (index: number, direction: 'up' | 'down') => {
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= publications.length) return;
+
+    try {
+      setLoadingAction(true);
+      const items = [...publications];
+      const temp = items[index];
+      items[index] = items[targetIndex];
+      items[targetIndex] = temp;
+
+      const reordered = items.map((item, idx) => ({ id: item.id, order: idx + 1 }));
+      await reorderCollectionItems(COLLECTIONS.PUBLICATIONS, reordered);
+      await onRefreshData();
+      showToast('Publication display order updated');
+    } catch (err: any) {
+      showToast(err?.message || 'Failed to update order', 'error');
+    } finally {
+      setLoadingAction(false);
+    }
+  };
+
   // --- Projects Handlers ---
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,7 +374,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         githubUrl: editingProject.githubUrl || '',
         isFeatured: editingProject.isFeatured ?? false,
         isPublished: editingProject.isPublished ?? true,
-        order: editingProject.order ?? projects.length + 1,
+        order: Number(editingProject.order) || projects.length + 1,
       };
 
       await saveProject(projectToSave);
@@ -274,7 +412,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         certificateImage: editingCert.certificateImage || '',
         credentialUrl: editingCert.credentialUrl || '',
         isQualification: editingCert.isQualification ?? false,
-        order: editingCert.order ?? certifications.length + 1,
+        order: Number(editingCert.order) || certifications.length + 1,
       };
 
       await saveCertification(certToSave);
@@ -301,7 +439,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         institution: editingEdu.institution,
         period: editingEdu.period || '2025',
         description: editingEdu.description || '',
-        order: editingEdu.order ?? education.length + 1,
+        order: Number(editingEdu.order) || education.length + 1,
       };
 
       await saveEducation(eduToSave);
@@ -328,7 +466,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         organization: editingExp.organization,
         period: editingExp.period || '2024',
         description: editingExp.description || '',
-        order: editingExp.order ?? experience.length + 1,
+        order: Number(editingExp.order) || experience.length + 1,
       };
 
       await saveExperience(expToSave);
@@ -353,7 +491,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         id: editingSkill.id || `skill-${Date.now()}`,
         name: editingSkill.name,
         category: (editingSkill.category as any) || 'Development',
-        order: editingSkill.order ?? skills.length + 1,
+        order: Number(editingSkill.order) || skills.length + 1,
       };
 
       await saveSkill(skillToSave);
@@ -387,7 +525,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         description: editingPub.description.trim(),
         coverImage: editingPub.coverImage || '',
         externalUrl: editingPub.externalUrl || '',
-        order: editingPub.order ?? publications.length + 1,
+        order: Number(editingPub.order) || publications.length + 1,
       };
 
       await savePublication(pubToSave);
@@ -408,6 +546,9 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     try {
       setLoadingAction(true);
       await saveSettings(settingsForm);
+      try {
+        localStorage.setItem('portfolio_cache_settings', JSON.stringify(settingsForm));
+      } catch {}
       await onRefreshData();
       showToast('Website settings and hero content updated');
     } catch (err: any) {
@@ -686,7 +827,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
               {/* Projects Table / Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {projects.map((proj) => (
+                {projects.map((proj, index) => (
                   <div
                     key={proj.id}
                     className="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between"
@@ -726,7 +867,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
 
                     <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
-                      <span className="text-slate-400 font-mono">Order: #{proj.order}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono font-bold text-[#542C91] bg-purple-50 px-2 py-0.5 rounded-md">
+                          #{proj.order}
+                        </span>
+                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-2xs">
+                          <button
+                            type="button"
+                            disabled={index === 0 || loadingAction}
+                            onClick={() => handleMoveProject(index, 'up')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Up in Sequence"
+                          >
+                            <ChevronUp className="w-3.5 h-3.5" />
+                          </button>
+                          <div className="w-px h-3.5 bg-slate-200" />
+                          <button
+                            type="button"
+                            disabled={index === projects.length - 1 || loadingAction}
+                            onClick={() => handleMoveProject(index, 'down')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Down in Sequence"
+                          >
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setEditingProject(proj)}
@@ -787,7 +954,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {certifications.map((c) => (
+                {certifications.map((c, index) => (
                   <div
                     key={c.id}
                     className="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between"
@@ -822,7 +989,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
 
                     <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
-                      <span className="text-slate-400 font-mono">Order: #{c.order}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono font-bold text-[#542C91] bg-purple-50 px-2 py-0.5 rounded-md">
+                          #{c.order}
+                        </span>
+                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-2xs">
+                          <button
+                            type="button"
+                            disabled={index === 0 || loadingAction}
+                            onClick={() => handleMoveCert(index, 'up')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Up in Sequence"
+                          >
+                            <ChevronUp className="w-3.5 h-3.5" />
+                          </button>
+                          <div className="w-px h-3.5 bg-slate-200" />
+                          <button
+                            type="button"
+                            disabled={index === certifications.length - 1 || loadingAction}
+                            onClick={() => handleMoveCert(index, 'down')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Down in Sequence"
+                          >
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setEditingCert(c)}
@@ -880,7 +1073,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
 
               <div className="space-y-3">
-                {education.map((e) => (
+                {education.map((e, index) => (
                   <div
                     key={e.id}
                     className="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-4"
@@ -892,10 +1085,38 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       {e.description && <p className="text-xs text-slate-500 mt-1">{e.description}</p>}
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 mr-1">
+                        <span className="text-[11px] font-mono font-bold text-[#542C91] bg-purple-50 px-2 py-0.5 rounded-md">
+                          #{e.order}
+                        </span>
+                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-2xs">
+                          <button
+                            type="button"
+                            disabled={index === 0 || loadingAction}
+                            onClick={() => handleMoveEdu(index, 'up')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Up in Sequence"
+                          >
+                            <ChevronUp className="w-3.5 h-3.5" />
+                          </button>
+                          <div className="w-px h-3.5 bg-slate-200" />
+                          <button
+                            type="button"
+                            disabled={index === education.length - 1 || loadingAction}
+                            onClick={() => handleMoveEdu(index, 'down')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Down in Sequence"
+                          >
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
                       <button
                         onClick={() => setEditingEdu(e)}
                         className="p-2 text-slate-600 hover:text-[#542C91] hover:bg-purple-50 rounded-lg transition-colors cursor-pointer"
+                        title="Edit"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -912,6 +1133,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           });
                         }}
                         className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        title="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -948,7 +1170,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
 
               <div className="space-y-3">
-                {experience.map((exp) => (
+                {experience.map((exp, index) => (
                   <div
                     key={exp.id}
                     className="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-4"
@@ -960,10 +1182,38 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       <p className="text-xs text-slate-500 mt-1">{exp.description}</p>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="flex items-center gap-1.5 mr-1">
+                        <span className="text-[11px] font-mono font-bold text-[#542C91] bg-purple-50 px-2 py-0.5 rounded-md">
+                          #{exp.order}
+                        </span>
+                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-2xs">
+                          <button
+                            type="button"
+                            disabled={index === 0 || loadingAction}
+                            onClick={() => handleMoveExp(index, 'up')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Up in Sequence"
+                          >
+                            <ChevronUp className="w-3.5 h-3.5" />
+                          </button>
+                          <div className="w-px h-3.5 bg-slate-200" />
+                          <button
+                            type="button"
+                            disabled={index === experience.length - 1 || loadingAction}
+                            onClick={() => handleMoveExp(index, 'down')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Down in Sequence"
+                          >
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
                       <button
                         onClick={() => setEditingExp(exp)}
                         className="p-2 text-slate-600 hover:text-[#542C91] hover:bg-purple-50 rounded-lg transition-colors cursor-pointer"
+                        title="Edit"
                       >
                         <Edit2 className="w-4 h-4" />
                       </button>
@@ -980,6 +1230,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                           });
                         }}
                         className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        title="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1015,32 +1266,62 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
               <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {skills.map((s) => (
+                  {skills.map((s, index) => (
                     <div
                       key={s.id}
-                      className="p-3 rounded-xl bg-slate-50 border border-slate-200/60 flex items-center justify-between gap-2"
+                      className="p-3 rounded-xl bg-slate-50 border border-slate-200/60 flex flex-col justify-between gap-2"
                     >
-                      <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-900 truncate">{s.name}</p>
-                        <p className="text-[10px] text-[#542C91]">{s.category}</p>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="text-xs font-bold text-slate-900 truncate">{s.name}</p>
+                          <p className="text-[10px] text-[#542C91]">{s.category}</p>
+                        </div>
+                        <span className="text-[10px] font-mono font-bold text-[#542C91] bg-purple-50 px-1.5 py-0.5 rounded">
+                          #{s.order}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <button
-                          onClick={() => setEditingSkill(s)}
-                          className="p-1 text-slate-500 hover:text-[#542C91]"
-                        >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={async () => {
-                            await deleteSkill(s.id);
-                            await onRefreshData();
-                            showToast('Skill deleted');
-                          }}
-                          className="p-1 text-rose-500 hover:text-rose-700"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                      <div className="flex items-center justify-between pt-1 border-t border-slate-200/50">
+                        <div className="flex items-center border border-slate-200 rounded overflow-hidden bg-white">
+                          <button
+                            type="button"
+                            disabled={index === 0 || loadingAction}
+                            onClick={() => handleMoveSkill(index, 'up')}
+                            className="p-0.5 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                            title="Move Up"
+                          >
+                            <ChevronUp className="w-3 h-3" />
+                          </button>
+                          <div className="w-px h-3 bg-slate-200" />
+                          <button
+                            type="button"
+                            disabled={index === skills.length - 1 || loadingAction}
+                            onClick={() => handleMoveSkill(index, 'down')}
+                            className="p-0.5 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer"
+                            title="Move Down"
+                          >
+                            <ChevronDown className="w-3 h-3" />
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => setEditingSkill(s)}
+                            className="p-1 text-slate-500 hover:text-[#542C91] rounded hover:bg-slate-100"
+                            title="Edit"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={async () => {
+                              await deleteSkill(s.id);
+                              await onRefreshData();
+                              showToast('Skill deleted');
+                            }}
+                            className="p-1 text-rose-500 hover:text-rose-700 rounded hover:bg-rose-50"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -1075,12 +1356,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {publications.map((pub) => (
+                {publications.map((pub, index) => (
                   <div
                     key={pub.id}
-                    className="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex items-start justify-between gap-4"
+                    className="p-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between"
                   >
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 mb-3">
                       {pub.coverImage && (
                         <img
                           src={resolveImageUrl(pub.coverImage)}
@@ -1094,29 +1375,60 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        onClick={() => setEditingPub(pub)}
-                        className="p-1.5 text-slate-600 hover:text-[#542C91] hover:bg-purple-50 rounded-lg"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setDeleteDialog({
-                            isOpen: true,
-                            title: `Delete "${pub.title}"?`,
-                            onConfirm: async () => {
-                              await deletePublication(pub.id);
-                              await onRefreshData();
-                              showToast('Publication deleted');
-                            },
-                          });
-                        }}
-                        className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] font-mono font-bold text-[#542C91] bg-purple-50 px-2 py-0.5 rounded-md">
+                          #{pub.order}
+                        </span>
+                        <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-white shadow-2xs">
+                          <button
+                            type="button"
+                            disabled={index === 0 || loadingAction}
+                            onClick={() => handleMovePub(index, 'up')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Up in Sequence"
+                          >
+                            <ChevronUp className="w-3.5 h-3.5" />
+                          </button>
+                          <div className="w-px h-3.5 bg-slate-200" />
+                          <button
+                            type="button"
+                            disabled={index === publications.length - 1 || loadingAction}
+                            onClick={() => handleMovePub(index, 'down')}
+                            className="p-1 hover:bg-purple-50 text-slate-600 hover:text-[#542C91] disabled:opacity-25 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                            title="Move Down in Sequence"
+                          >
+                            <ChevronDown className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <button
+                          onClick={() => setEditingPub(pub)}
+                          className="p-1.5 text-slate-600 hover:text-[#542C91] hover:bg-purple-50 rounded-lg transition-colors cursor-pointer"
+                          title="Edit"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setDeleteDialog({
+                              isOpen: true,
+                              title: `Delete "${pub.title}"?`,
+                              onConfirm: async () => {
+                                await deletePublication(pub.id);
+                                await onRefreshData();
+                                showToast('Publication deleted');
+                              },
+                            });
+                          }}
+                          className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                          title="Delete"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1397,20 +1709,33 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Category *</label>
-                <select
-                  value={editingProject.category || 'Web Applications'}
-                  onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value as any })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
-                >
-                  <option value="AI Tools">AI Tools</option>
-                  <option value="Web Applications">Web Applications</option>
-                  <option value="Finance & Accounting">Finance & Accounting</option>
-                  <option value="Education">Education</option>
-                  <option value="Experiments">Experiments</option>
-                  <option value="Other">Other</option>
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Category *</label>
+                  <select
+                    value={editingProject.category || 'Web Applications'}
+                    onChange={(e) => setEditingProject({ ...editingProject, category: e.target.value as any })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                  >
+                    <option value="AI Tools">AI Tools</option>
+                    <option value="Web Applications">Web Applications</option>
+                    <option value="Finance & Accounting">Finance & Accounting</option>
+                    <option value="Education">Education</option>
+                    <option value="Experiments">Experiments</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Display Order (Position #)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editingProject.order ?? 1}
+                    onChange={(e) => setEditingProject({ ...editingProject, order: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                    placeholder="1, 2, 3..."
+                  />
+                </div>
               </div>
 
               <div>
@@ -1582,15 +1907,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Issue Date</label>
-                <input
-                  type="text"
-                  value={editingCert.issueDate || ''}
-                  onChange={(e) => setEditingCert({ ...editingCert, issueDate: e.target.value })}
-                  placeholder="e.g. 2023 or November 2025"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Issue Date</label>
+                  <input
+                    type="text"
+                    value={editingCert.issueDate || ''}
+                    onChange={(e) => setEditingCert({ ...editingCert, issueDate: e.target.value })}
+                    placeholder="e.g. 2023 or November 2025"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Display Order (Position #)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editingCert.order ?? 1}
+                    onChange={(e) => setEditingCert({ ...editingCert, order: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                    placeholder="1, 2, 3..."
+                  />
+                </div>
               </div>
 
               <div>
@@ -1708,15 +2046,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Time Period</label>
-                <input
-                  type="text"
-                  value={editingEdu.period || ''}
-                  onChange={(e) => setEditingEdu({ ...editingEdu, period: e.target.value })}
-                  placeholder="e.g. 2023 – 2025"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Time Period</label>
+                  <input
+                    type="text"
+                    value={editingEdu.period || ''}
+                    onChange={(e) => setEditingEdu({ ...editingEdu, period: e.target.value })}
+                    placeholder="e.g. 2023 – 2025"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Display Order (Position #)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editingEdu.order ?? 1}
+                    onChange={(e) => setEditingEdu({ ...editingEdu, order: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                    placeholder="1, 2, 3..."
+                  />
+                </div>
               </div>
 
               <div>
@@ -1776,14 +2127,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Time Period</label>
-                <input
-                  type="text"
-                  value={editingExp.period || ''}
-                  onChange={(e) => setEditingExp({ ...editingExp, period: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
-                />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Time Period</label>
+                  <input
+                    type="text"
+                    value={editingExp.period || ''}
+                    onChange={(e) => setEditingExp({ ...editingExp, period: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Display Order (Position #)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editingExp.order ?? 1}
+                    onChange={(e) => setEditingExp({ ...editingExp, order: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                    placeholder="1, 2, 3..."
+                  />
+                </div>
               </div>
 
               <div>
@@ -1832,19 +2196,32 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 />
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Category *</label>
-                <select
-                  value={editingSkill.category || 'Development'}
-                  onChange={(e) => setEditingSkill({ ...editingSkill, category: e.target.value as any })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
-                >
-                  <option value="Development">Web Development</option>
-                  <option value="AI & Tools">AI & Tools</option>
-                  <option value="Marketing & SEO">Marketing & SEO</option>
-                  <option value="Finance & Business">Finance & Business</option>
-                  <option value="Leadership">Leadership</option>
-                </select>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Category *</label>
+                  <select
+                    value={editingSkill.category || 'Development'}
+                    onChange={(e) => setEditingSkill({ ...editingSkill, category: e.target.value as any })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                  >
+                    <option value="Development">Web Development</option>
+                    <option value="AI & Tools">AI & Tools</option>
+                    <option value="Marketing & SEO">Marketing & SEO</option>
+                    <option value="Finance & Business">Finance & Business</option>
+                    <option value="Leadership">Leadership</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Display Order (#)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editingSkill.order ?? 1}
+                    onChange={(e) => setEditingSkill({ ...editingSkill, order: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                    placeholder="1, 2, 3..."
+                  />
+                </div>
               </div>
 
               <button
@@ -1874,15 +2251,28 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </h3>
 
             <form onSubmit={handleSavePub} className="space-y-3.5">
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={editingPub.title || ''}
-                  onChange={(e) => setEditingPub({ ...editingPub, title: e.target.value })}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
-                />
+              <div className="grid grid-cols-3 gap-3">
+                <div className="col-span-2">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editingPub.title || ''}
+                    onChange={(e) => setEditingPub({ ...editingPub, title: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">Display Order (#)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={editingPub.order ?? 1}
+                    onChange={(e) => setEditingPub({ ...editingPub, order: parseInt(e.target.value) || 1 })}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm"
+                    placeholder="1, 2..."
+                  />
+                </div>
               </div>
 
               <div>
